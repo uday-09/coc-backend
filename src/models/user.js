@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
-const userSchema = mongoose.Schema({
+const userSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -68,11 +69,40 @@ const userSchema = mongoose.Schema({
       }
     },
   },
+  tokens: [
+    {
+      token: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
 });
+
+userSchema.methods.genAuthKey = async function () {
+  const user = this;
+  const token = jwt.sign({ _id: user._id.toString() }, "cocsecrete");
+  user.tokens = [...user.tokens, { token }];
+  await user.save();
+  return token;
+};
+
+userSchema.statics.findByCredentials = async (username, password) => {
+  const user = await User.findOne({ username });
+  if (!user) {
+    throw new Error("Invalid username or password");
+  }
+  const verify = await bcrypt.compare(password, user.password);
+  if (!verify) {
+    throw new Error("Invalid username or password");
+  }
+  return user;
+};
 
 userSchema.pre("save", async function (next) {
   const user = this;
-  if (user.isModified()) {
+  if (user.isModified("password")) {
+    console.log("comes here to check");
     user.password = await bcrypt.hash(user.password, 10);
   }
   next();
