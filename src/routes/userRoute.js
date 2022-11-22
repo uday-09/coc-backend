@@ -4,6 +4,20 @@ const User = require("../models/user");
 const express = require("express");
 
 const router = express.Router();
+const authUser = require("../middleware/authUser");
+
+// >>>>>>>>>>>>>>>>>>>>>>>>>> MY PROFILE <<<<<<<<<<<<<<<<<<<<<<<<
+
+router.get("/user/me", authUser, async (req, res) => {
+  try {
+    const user = req.user;
+    res.send(user);
+  } catch (err) {
+    res.status(500).send({ message: "couldn't reach server! Try again.", err });
+  }
+});
+
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>> USER REGISTRATION <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 router.post("/user", async (req, res) => {
   try {
@@ -22,20 +36,9 @@ router.post("/user", async (req, res) => {
   }
 });
 
-router.post("/user/login", async (req, res) => {
-  try {
-    const user = await User.findByCredentials(
-      req.body.username,
-      req.body.password
-    );
-    const token = await user.genAuthKey();
-    res.send({ user, token });
-  } catch (err) {
-    res.status(400).send({ error: err.message });
-  }
-});
+// >>>>>>>>>>>>>>>>>>>>>>>> UPDATE USER <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-router.patch("/user/update/:id", async (req, res) => {
+router.patch("/user/update/me", authUser, async (req, res) => {
   try {
     const allowedUpdates = [
       "username",
@@ -83,8 +86,8 @@ router.patch("/user/update/:id", async (req, res) => {
 
     const result = await user.save();
     res.send({
-      success: false,
-      message: "succesfully",
+      success: true,
+      message: "succesfully updated",
       user_details: result,
     });
   } catch (err) {
@@ -92,6 +95,42 @@ router.patch("/user/update/:id", async (req, res) => {
     res
       .status(400)
       .send({ success: false, message: "Something went wrong", error: err });
+  }
+});
+
+// >>>>>>>>>>>>>>>>>>>>>>>>> USER LOGIN <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+router.post("/user/login", async (req, res) => {
+  try {
+    const user = await User.findByCredentials(
+      req.body.username,
+      req.body.password
+    );
+    const token = await user.genAuthKey();
+    res.send({ user, token });
+  } catch (err) {
+    res.status(400).send({ error: err.message });
+  }
+});
+
+// >>>>>>>>>>>>>>>>>>>>>>>  USER LOGOUT <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+router.get("/user/logout", authUser, async (req, res) => {
+  try {
+    const user = req.user;
+    const token = req.token;
+    const tokens = user.tokens;
+
+    //Remove the token that we authenticated the user with
+    const filteredTokens = tokens.filter((iToken) => {
+      return iToken.token != token; // iToken indicates the individual token;
+    });
+
+    user.tokens = filteredTokens;
+    await user.save();
+    res.status(200).send({ success: true, message: "logged out" });
+  } catch (err) {
+    res.status(400).send({ message: "something went wrong", error: err });
   }
 });
 

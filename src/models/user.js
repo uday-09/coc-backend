@@ -79,6 +79,17 @@ const userSchema = new mongoose.Schema({
   ],
 });
 
+//This function will be called by mongoose before sending data which is intended to change the document to json
+//We are using that function to customize our data to not to send password and token info.
+
+userSchema.methods.toJSON = function () {
+  const user = this;
+  const public = user.toObject();
+  delete public.password;
+  delete public.tokens;
+  return public;
+};
+
 userSchema.methods.genAuthKey = async function () {
   const user = this;
   const token = jwt.sign({ _id: user._id.toString() }, "cocsecrete");
