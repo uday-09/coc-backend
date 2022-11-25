@@ -60,13 +60,7 @@ router.patch("/user/update/me", authUser, async (req, res) => {
       });
     }
 
-    const user = await User.findById(req.params.id);
-    if (!user) {
-      return res.status(404).send({
-        success: false,
-        message: "No user found with id",
-      });
-    }
+    const user = req.user;
 
     updates.forEach((update) => {
       user[update] = req.body[update];
@@ -101,6 +95,7 @@ router.patch("/user/update/me", authUser, async (req, res) => {
 // >>>>>>>>>>>>>>>>>>>>>>>>> USER LOGIN <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 router.post("/user/login", async (req, res) => {
+  console.log("Comes here to login");
   try {
     const user = await User.findByCredentials(
       req.body.username,

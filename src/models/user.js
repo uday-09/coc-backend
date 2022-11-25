@@ -79,6 +79,12 @@ const userSchema = new mongoose.Schema({
   ],
 });
 
+userSchema.virtual("posts", {
+  ref: "Post",
+  foreignField: "postedBy",
+  localField: "_id",
+});
+
 //This function will be called by mongoose before sending data which is intended to change the document to json
 //We are using that function to customize our data to not to send password and token info.
 

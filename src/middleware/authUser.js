@@ -1,6 +1,8 @@
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 
+// This auth middleware is responsible for authentication the user to proceed the further request
+
 const authUser = async (req, res, next) => {
   const bearerToken = req.headers?.authorization;
   if (!bearerToken) {
@@ -22,7 +24,7 @@ const authUser = async (req, res, next) => {
         .send({ success: false, message: "Unauthorized User" });
     }
 
-    req.user = user;
+    req.user = user; // We setting the user to request so that we can use it later
     req.token = token;
     next(); // to indicate the we are done with middleware
   } catch (err) {
