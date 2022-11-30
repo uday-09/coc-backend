@@ -19,6 +19,10 @@ const postModel = mongoose.Schema(
     tags: {
       type: [String],
     },
+    imageUri: {
+      type: String,
+      required: true,
+    },
     postedBy: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,

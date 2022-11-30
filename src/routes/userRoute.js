@@ -13,7 +13,7 @@ router.get("/user/me", authUser, async (req, res) => {
     const user = req.user;
     res.send(user);
   } catch (err) {
-    res.status(500).send({ message: "couldn't reach server! Try again.", err });
+    res.status(500).send({ success: false, message: err.message });
   }
 });
 
@@ -32,7 +32,7 @@ router.post("/user", async (req, res) => {
     const token = await resUser.genAuthKey();
     res.status(201).send({ resUser, token });
   } catch (err) {
-    res.status(400).send({ message: err.message });
+    res.status(400).send({ message: err.message, success: false });
   }
 });
 
@@ -86,9 +86,8 @@ router.patch("/user/update/me", authUser, async (req, res) => {
     });
   } catch (err) {
     console.log(err);
-    res
-      .status(400)
-      .send({ success: false, message: "Something went wrong", error: err });
+    res;
+    res.status(400).send({ success: false, message: err.message });
   }
 });
 
@@ -104,7 +103,7 @@ router.post("/user/login", async (req, res) => {
     const token = await user.genAuthKey();
     res.send({ user, token });
   } catch (err) {
-    res.status(400).send({ error: err.message });
+    res.status(400).send({ success: false, message: err.message });
   }
 });
 
@@ -125,7 +124,7 @@ router.get("/user/logout", authUser, async (req, res) => {
     await user.save();
     res.status(200).send({ success: true, message: "logged out" });
   } catch (err) {
-    res.status(400).send({ message: "something went wrong", error: err });
+    res.status(400).send({ success: false, message: err.message });
   }
 });
 

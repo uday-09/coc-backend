@@ -2,3 +2,4 @@ node_modules/
 dbCom.txt
 play
 public
+.env
