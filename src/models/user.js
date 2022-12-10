@@ -38,6 +38,11 @@ const userSchema = new mongoose.Schema({
     },
   },
 
+  bio: {
+    type: String,
+    required: true,
+    trim: true,
+  },
   email: {
     type: String,
     required: true,
@@ -68,6 +73,9 @@ const userSchema = new mongoose.Schema({
         throw new Error("location cannot be empty");
       }
     },
+  },
+  profilePic: {
+    type: String,
   },
   tokens: [
     {

@@ -24,7 +24,8 @@ const upload = (bucketName) =>
       },
     }),
     fileFilter(req, file, cb) {
-      if (!file.originalname.match(/\.(jpeg|jpg|png)$/)) {
+      file;
+      if (!file.originalname.match(/\.(jpeg|jpg|png|mp4|mkv)$/)) {
         return cb(new Error("Please upload a jpeg/jpg/png document"));
       }
       cb(undefined, true);

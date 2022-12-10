@@ -17,7 +17,6 @@ const authUser = async (req, res, next) => {
     const verify = jwt.verify(token, "cocsecrete");
 
     const user = await User.findOne({ _id: verify._id, "tokens.token": token });
-
     if (!user) {
       return res
         .status(401)

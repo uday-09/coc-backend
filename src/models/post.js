@@ -28,6 +28,12 @@ const postModel = mongoose.Schema(
       required: true,
       ref: "User",
     },
+    likes: {
+      type: [mongoose.Schema.Types.ObjectId],
+    },
+    dislikes: {
+      type: [mongoose.Schema.Types.ObjectId],
+    },
   },
   {
     timestamps: true,

@@ -47,6 +47,8 @@ router.patch("/user/update/me", authUser, async (req, res) => {
       "age",
       "email",
       "name",
+      "profilePic",
+      "bio",
     ];
     const updates = Object.keys(req.body);
     const validUpdate = updates.every((update) => {
