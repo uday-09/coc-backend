@@ -5,6 +5,7 @@ const express = require("express");
 
 const router = express.Router();
 const authUser = require("../middleware/authUser");
+const bcrypt = require("bcryptjs");
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>> MY PROFILE <<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -87,8 +88,6 @@ router.patch("/user/update/me", authUser, async (req, res) => {
       user_details: result,
     });
   } catch (err) {
-    console.log(err);
-    res;
     res.status(400).send({ success: false, message: err.message });
   }
 });
@@ -96,7 +95,6 @@ router.patch("/user/update/me", authUser, async (req, res) => {
 // >>>>>>>>>>>>>>>>>>>>>>>>> USER LOGIN <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 router.post("/user/login", async (req, res) => {
-  console.log("Comes here to login");
   try {
     const user = await User.findByCredentials(
       req.body.username,
@@ -127,6 +125,33 @@ router.get("/user/logout", authUser, async (req, res) => {
     res.status(200).send({ success: true, message: "logged out" });
   } catch (err) {
     res.status(400).send({ success: false, message: err.message });
+  }
+});
+
+// >>>>>>>>>>>>>>>>>> Change My password <<<<<<<<<<<<<<<
+
+router.patch("/change/my-password/:id", authUser, async (req, res) => {
+  try {
+    const user = req.user;
+    const { password, newPassword } = req.body;
+    if (!password || !newPassword) {
+      return res.status(400).send({
+        message: "Please provide old and new passwords",
+        success: false,
+      });
+    }
+    const verifyOldPassword = await bcrypt.compare(password, user.password);
+    if (!verifyOldPassword) {
+      return res.status(400).send({
+        message: "Please enter correct password!",
+        success: false,
+      });
+    }
+    user.password = newPassword;
+    await user.save();
+    res.send({ message: "Succesfully updated password!", success: true });
+  } catch (err) {
+    res.status(400).send({ message: "Failed to update password! Try again!" });
   }
 });
 

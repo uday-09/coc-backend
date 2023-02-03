@@ -13,9 +13,7 @@ router.post(
   authUser,
   async (req, res) => {
     const uploaderUserId = req.user._id;
-    console.log(uploaderUserId);
     const { title, description, location, tags, imageUri } = req.body;
-    console.log(imageUri);
     const post = new Post({
       title,
       description,
@@ -24,9 +22,7 @@ router.post(
       postedBy: uploaderUserId,
       imageUri,
     });
-
     try {
-      console.log("Came long way here");
       await post.save();
       return res.send({ success: true, message: "Post created succesfully" });
     } catch (err) {
@@ -59,19 +55,40 @@ router.get("/my/posts", authUser, async (req, res) => {
   }
 });
 
+//>>>>>>>>>>>>>>>>>>>>>> Get single post <<<<<<<<<<<<<<<<<<<<
+
+router.get("/coc/get/post/:id", authUser, async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res
+        .status(404)
+        .send({ sucess: false, message: "Requested post not found" });
+    }
+    res.status(200).send({
+      ...post.toObject(),
+      message: "Succefully fetched post",
+      success: true,
+    });
+  } catch (err) {
+    res.status(400).send({ err, message: "Failed to fetch", success: false });
+  }
+});
+
 // >>>>>>>>>>>>>>>>>>>>> Get Feed posts <<<<<<<<<<<<<<<<<<<<<<
 
 router.get("/feed/posts", authUser, async (req, res) => {
-  console.log("Valled from browser");
   const currentUser = req.user;
   const userId = currentUser._id;
   const feedPosts = [];
 
   try {
-    const feed = await Post.find({ postedBy: { $ne: userId } }).sort({
-      date: "desc",
-    });
+    // const feed = await Post.find({ postedBy: { $ne: userId } }).sort({
+    //   date: "desc",
+    // });
 
+    const feed = await Post.find();
     await Promise.all(
       feed.map(async (post) => {
         const postedBy = await User.findOne({ _id: post.postedBy });
@@ -106,22 +123,17 @@ router.delete("/delete/mypost/:id", authUser, async (req, res) => {
         .status(404)
         .send({ success: false, message: "No post found with id" });
     }
-    console.log(post);
     const userId = req.user._id.toString();
     const ownerId = post.postedBy.toString();
-    console.log(userId, ownerId);
     if (userId !== ownerId) {
       return res.status(401).send({
         success: false,
         message: "You are not authorized to delete this post.",
       });
     }
-    console.log("comes here");
     const deletedPost = await Post.findByIdAndDelete(req.params.id);
-    console.log(deletedPost);
     res.send({ deletedPost });
   } catch (err) {
-    console.log(err);
     return res.status(400).send({ message: err.message, success: false });
   }
 });
@@ -131,13 +143,9 @@ router.delete("/delete/mypost/:id", authUser, async (req, res) => {
 router.post(
   "/post/crime/picture",
   async (req, res) => {
-    console.log("Hey there", req.body, req.file);
-    // console.log(req);
     const uploadSingle = uploadImages("cop-on-cloud").single("image");
-    console.log();
     uploadSingle(req, res, async (err) => {
       if (err) {
-        console.log(err);
         return res.status(400).json({
           success: false,
           message:
@@ -145,13 +153,11 @@ router.post(
             "\nSomethig went wrong while connceting to AWS Services",
         });
       }
-      // console.log(req.file);
 
       res.status(200).json({ imageUri: req.file.location });
     });
   },
   (error, req, res, next) => {
-    console.log(error);
     res.status(400).send({ success: false, message: error.message });
   }
 );
@@ -249,9 +255,7 @@ router.patch("/post/update/:id", authUser, async (req, res) => {
     }
 
     const uploaderUserId = req.user._id;
-    console.log(uploaderUserId);
     const { title, description, location, tags, imageUri } = req.body;
-    console.log(imageUri);
     const newPost = new Post({
       title,
       description,
@@ -260,7 +264,6 @@ router.patch("/post/update/:id", authUser, async (req, res) => {
       postedBy: uploaderUserId,
       imageUri,
     });
-    console.log("Came long way here");
     await newPost.save();
     await Post.findByIdAndDelete(id);
     return res.send({ success: true, message: "Post updated succesfully" });

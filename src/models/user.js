@@ -19,10 +19,28 @@ const userSchema = new mongoose.Schema({
     required: true,
     trim: true,
     unique: true,
-    lowercase: true,
     validate(username) {
       if (username.length < 6) {
         throw new Error("Username should be atleast 6 characters");
+      }
+      let counter = { dashCount: 0, dotCount: 0, others: 0 };
+      const allowedChars = "abcdefghijklmnopqrstuvwxyz._1234567890";
+      for (userNameChar in username) {
+        const ind = allowedChars.indexOf(username[userNameChar]);
+        if (ind === -1) {
+          counter.others = counter.others + 1;
+        }
+        if (username[userNameChar] === "_") {
+          counter.dashCount = counter.dashCount + 1;
+        }
+        if (username[userNameChar] === ".") {
+          counter.dotCount = counter.dotCount + 1;
+        }
+      }
+      if (counter.others > 0 || counter.dotCount > 1) {
+        throw new Error(
+          "Only use [a-b, 0-9], '_' (underscore) and single '.' (dot)"
+        );
       }
     },
   },
@@ -127,7 +145,6 @@ userSchema.statics.findByCredentials = async (username, password) => {
 userSchema.pre("save", async function (next) {
   const user = this;
   if (user.isModified("password")) {
-    console.log("comes here to check");
     user.password = await bcrypt.hash(user.password, 10);
   }
   next();
