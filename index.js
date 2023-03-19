@@ -4,6 +4,7 @@ const cors = require("cors");
 const env = require("dotenv").config();
 const userRouter = require("./src/routes/userRoute");
 const postsRouter = require("./src/routes/postsRouter");
+const commentsRouter = require("./src/routes/commentsRoutes");
 const User = require("./src/models/user");
 // const multer = require("multer");
 // const upload = multer();
@@ -16,6 +17,7 @@ app.use(cors({ origin: true }));
 app.use(express.json());
 app.use(userRouter);
 app.use(postsRouter);
+app.use(commentsRouter);
 app.use(express.urlencoded({ extended: true }));
 
 app.listen(PORT, () => {

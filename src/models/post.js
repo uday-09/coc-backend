@@ -31,9 +31,6 @@ const postModel = mongoose.Schema(
     likes: {
       type: [mongoose.Schema.Types.ObjectId],
     },
-    dislikes: {
-      type: [mongoose.Schema.Types.ObjectId],
-    },
   },
   {
     timestamps: true,
