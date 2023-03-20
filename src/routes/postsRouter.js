@@ -96,9 +96,9 @@ router.get("/feed/posts", authUser, async (req, res) => {
       })
     );
 
-    feedPosts.sort(function (a, b) {
-      return new Date(b.date) - new Date(a.date);
-    });
+    // feedPosts.sort(function (a, b) {
+    //   return new Date(b.date) - new Date(a.date);
+    // });
 
     res.send({ feedPosts });
   } catch (error) {

@@ -103,6 +103,10 @@ const userSchema = new mongoose.Schema({
       },
     },
   ],
+  userType: {
+    type: String, //If admin set this to admin
+    default: "user",
+  },
 });
 
 userSchema.virtual("posts", {

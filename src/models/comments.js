@@ -14,6 +14,7 @@ const CommentsModel = mongoose.Schema(
     postedBy: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
+      ref: "User",
     },
   },
   {

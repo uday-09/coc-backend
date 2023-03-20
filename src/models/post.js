@@ -31,6 +31,11 @@ const postModel = mongoose.Schema(
     likes: {
       type: [mongoose.Schema.Types.ObjectId],
     },
+    postStatus: {
+      //Posts have three different statuses: 1) Accepted 2)Rejected 3)Pending
+      type: String,
+      default: "pending",
+    },
   },
   {
     timestamps: true,

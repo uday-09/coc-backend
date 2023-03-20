@@ -59,11 +59,23 @@ router.get("/comments/post/:postId", authUser, async (req, res) => {
       .limit(limit)
       .skip(skip);
 
+    const resultArray = [];
+    /*----fethching comments and username ------ */
+    await Promise.all(
+      comments.map(async (eachComment) => {
+        const mappedComment = await User.findById(eachComment?.postedBy);
+        resultArray.push({
+          ...eachComment.toObject(),
+          username: mappedComment?.username,
+        });
+      })
+    );
+
     return res.send({
       message: "Success fetched comments",
       success: true,
-      comments,
-      commentsCount: comments.length,
+      comments: resultArray,
+      commentsCount: resultArray.length,
     });
   } catch (err) {
     res.status(400).send({ message: err.message, success: false });
