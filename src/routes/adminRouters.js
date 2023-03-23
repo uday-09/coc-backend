@@ -92,4 +92,32 @@ router.patch("/admin/update-status/:postId", authUser, async (req, res) => {
   }
 });
 
+//----------------get post based on status---------------
+router.get("/admin/post/status", authUser, async (req, res) => {
+  let { status } = req.query;
+  try {
+    let feed = null;
+    // Handle case when no status sent
+    if (!status) {
+      feed = await Post.find();
+    } else {
+      feed = await Post.find({ postStatus: status });
+    }
+    const feedPosts = [];
+    await Promise.all(
+      feed.map(async (post) => {
+        const postedBy = await User.findOne({ _id: post.postedBy });
+        feedPosts.push({ ...post.toObject(), username: postedBy.username });
+      })
+    );
+    return res.status(200).send({
+      posts: feedPosts,
+      message: "fetched posts successfully",
+      success: true,
+    });
+  } catch (err) {
+    res.status(500).send({ message: err.message, success: false });
+  }
+});
+
 module.exports = router;

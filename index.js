@@ -6,6 +6,7 @@ const userRouter = require("./src/routes/userRoute");
 const postsRouter = require("./src/routes/postsRouter");
 const commentsRouter = require("./src/routes/commentsRoutes");
 const adminRouter = require("./src/routes/adminRouters");
+const commonRouter = require("./src/routes/commonRoutes");
 const User = require("./src/models/user");
 // const multer = require("multer");
 // const upload = multer();
@@ -20,6 +21,7 @@ app.use(userRouter);
 app.use(postsRouter);
 app.use(commentsRouter);
 app.use(adminRouter);
+app.use(commonRouter);
 app.use(express.urlencoded({ extended: true }));
 
 app.listen(PORT, () => {
