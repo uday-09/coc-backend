@@ -40,9 +40,11 @@ router.get("/admin/stats", authUser, async (req, res) => {
     const pendingPostsCount = await Post.find({
       postStatus: "pending",
     }).count();
+    const allPostsCount = await Post.find().count();
     res.send({
       message: "Succesfully fetched stats",
       stats: {
+        allPostsCount,
         acceptedPostCount,
         rejectedPostsCount,
         pendingPostsCount,
@@ -107,7 +109,15 @@ router.get("/admin/post/status", authUser, async (req, res) => {
     await Promise.all(
       feed.map(async (post) => {
         const postedBy = await User.findOne({ _id: post.postedBy });
-        feedPosts.push({ ...post.toObject(), username: postedBy.username });
+        feedPosts.push({
+          ...post.toObject(),
+          postedUserInfo: {
+            username: postedBy.username,
+            email: postedBy.email,
+            profilePic: postedBy.profilePic,
+            location: postedBy.location,
+          },
+        });
       })
     );
     return res.status(200).send({
