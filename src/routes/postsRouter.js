@@ -272,4 +272,6 @@ router.patch("/post/update/:id", authUser, async (req, res) => {
   }
 });
 
+//>>>>>>>>>>>>>>> GET all posts <<<<<<<<<<<<<<<<<<<<<<
+
 module.exports = router;

@@ -155,4 +155,16 @@ router.patch("/change/my-password/:id", authUser, async (req, res) => {
   }
 });
 
+//>>>>>>>>>>>>>>>>>>>>>> Get user info based on id <<<<<<<<<<<<<<<<<<<<
+
+router.get("/user/:userId", authUser, async (req, res) => {
+  const userId = req.params.userId;
+  try {
+    const user = await User.findById(userId);
+    res.send({ user, message: "User information fetched", success: false });
+  } catch (err) {
+    return res.status(500).send({ message: err.message, success: false });
+  }
+});
+
 module.exports = router;
