@@ -20,12 +20,14 @@ const upload = (bucketName) =>
         cb(null, { fieldName: file.fieldname });
       },
       key: function (req, file, cb) {
-        cb(null, `image-${Date.now()}`);
+        const extension = file.originalname.split(".").pop();
+        cb(null, `image-${Date.now()}.${extension ? extension : ""}`);
       },
     }),
     fileFilter(req, file, cb) {
       file;
       if (!file.originalname.match(/\.(jpeg|jpg|png|mp4|mkv)$/)) {
+        console.log(file.originalname.split(".").pop());
         return cb(new Error("Please upload a jpeg/jpg/png document"));
       }
       cb(undefined, true);

@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema({
       }
       let counter = { dashCount: 0, dotCount: 0, others: 0 };
       const allowedChars = "abcdefghijklmnopqrstuvwxyz._1234567890";
-      for (userNameChar in username) {
+      for (let userNameChar in username) {
         const ind = allowedChars.indexOf(username[userNameChar]);
         if (ind === -1) {
           counter.others = counter.others + 1;

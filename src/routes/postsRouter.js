@@ -138,7 +138,7 @@ router.delete("/delete/mypost/:id", authUser, async (req, res) => {
   }
 });
 
-// >>>>>>>>>>>>>>>>> Image POSTING <<<<<<<<<<<<<<<<<<<<
+// >>>>>>>>>>>>>>>>> Image / video POSTING <<<<<<<<<<<<<<<<<<<<
 
 router.post(
   "/post/crime/picture",
@@ -153,7 +153,12 @@ router.post(
             "\nSomethig went wrong while connceting to AWS Services",
         });
       }
-
+      if (!req?.file?.location) {
+        return res.status(400).json({
+          success: false,
+          message: "Somethig went wrong while connceting to AWS Services",
+        });
+      }
       res.status(200).json({ imageUri: req.file.location });
     });
   },

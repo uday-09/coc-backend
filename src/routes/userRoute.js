@@ -130,7 +130,7 @@ router.get("/user/logout", authUser, async (req, res) => {
 
 // >>>>>>>>>>>>>>>>>> Change My password <<<<<<<<<<<<<<<
 
-router.patch("/change/my-password/:id", authUser, async (req, res) => {
+router.patch("/change/my-password", authUser, async (req, res) => {
   try {
     const user = req.user;
     const { password, newPassword } = req.body;
