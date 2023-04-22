@@ -92,7 +92,11 @@ router.get("/feed/posts", authUser, async (req, res) => {
     await Promise.all(
       feed.map(async (post) => {
         const postedBy = await User.findOne({ _id: post.postedBy });
-        feedPosts.push({ ...post.toObject(), username: postedBy.username });
+        feedPosts.push({
+          ...post.toObject(),
+          username: postedBy.username,
+          profilePic: postedBy.profilePic,
+        });
       })
     );
 

@@ -52,6 +52,7 @@ router.get("/comments/post/:postId", authUser, async (req, res) => {
         .status(404)
         .send({ success: false, message: "Post not found" });
     }
+    const commentCount = await Comments.find({ postId }).count();
 
     const comments = await Comments.find({
       postId,
@@ -67,6 +68,7 @@ router.get("/comments/post/:postId", authUser, async (req, res) => {
         resultArray.push({
           ...eachComment.toObject(),
           username: mappedComment?.username,
+          profilePic: mappedComment?.profilePic,
         });
       })
     );
@@ -75,6 +77,7 @@ router.get("/comments/post/:postId", authUser, async (req, res) => {
       message: "Success fetched comments",
       success: true,
       comments: resultArray,
+      totalCount: commentCount,
       commentsCount: resultArray.length,
     });
   } catch (err) {
