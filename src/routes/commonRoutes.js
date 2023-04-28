@@ -11,8 +11,6 @@ sgMail.setApiKey(process.env.SG_MAIL_KEY);
 router.post("/send/post-status", async (req, res) => {
   const { reciever, reasons, imageUri, postTitle, username } = req.body;
 
-  console.log(req.body);
-
   if (!reciever || !reasons || !imageUri || !postTitle) {
     return res.status(400).send({
       message: "Reciever mail, reasons, image URL and post title are required",
@@ -25,7 +23,7 @@ router.post("/send/post-status", async (req, res) => {
   <p>We thank you for supporting us in bringing better society by sharing the crime you came across. But we are sorry to inform you that the post you have uploaded recently got rejected!
   </p>
   <strong>We have attached image related to that post:</strong>
-  <img src={{imageUri}}/>
+  <img src={{imageUri}} width="300px" height="300px"/>
   <p>Your post has been rejected due to following reasons: </p>
   <ul>
   {{#each reasons}}

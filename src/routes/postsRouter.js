@@ -5,6 +5,7 @@ const Post = require("../models/post");
 const authUser = require("../middleware/authUser");
 const User = require("../models/user");
 const uploadImages = require("../utils/uploadImages");
+const { POST_STATUS } = require("../utils/constants");
 
 // >>>>>>>>>>>>>>>>>>>>>>> Create new post <<<<<<<<<<<<<<<<<<<<<<<
 
@@ -88,7 +89,7 @@ router.get("/feed/posts", authUser, async (req, res) => {
     //   date: "desc",
     // });
 
-    const feed = await Post.find();
+    const feed = await Post.find({ postStatus: POST_STATUS.ACCEPTED });
     await Promise.all(
       feed.map(async (post) => {
         const postedBy = await User.findOne({ _id: post.postedBy });
@@ -108,6 +109,16 @@ router.get("/feed/posts", authUser, async (req, res) => {
   } catch (error) {
     res.status(400).send({ success: false, message: error.message });
   }
+});
+
+//>>>>>>>>>>>>>>>>>>>>>>>Get trending posts<<<<<<<<<<<<<<<<<
+router.get("/trending/posts", async (req, res) => {
+  try {
+    const posts = await Post.find({ postStatus: POST_STATUS.ACCEPTED }).sort({
+      likes: "asc",
+    });
+    return res.send({ posts });
+  } catch (err) {}
 });
 
 // >>>>>>>>>>>>>>>>>>>> Delete My Posts <<<<<<<<<<<<<<<<<<<<<<<
